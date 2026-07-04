@@ -1,13 +1,11 @@
 import streamlit as st
 import requests
-import random
 
-# ================= 1. SİNEMATİK SİBER-ESTETİK TASARIM (CSS MARİFETLERİ) =================
+# ================= 1. SİNEMATİK SİBER-ESTETİK TASARIM (CSS) =================
 st.set_page_config(page_title="DeepBlue - Sanal Evren Ekosistemi", page_icon="🌊", layout="wide")
 
 st.markdown("""
     <style>
-    /* Global Arka Plan ve Puslu Gece Efekti */
     .stApp {
         background: linear-gradient(rgba(10, 20, 35, 0.65), rgba(5, 10, 20, 0.75)), 
                     url('https://unsplash.com');
@@ -16,8 +14,6 @@ st.markdown("""
         background-attachment: fixed;
         color: #f1f5f9;
     }
-    
-    /* Neon Cam Kart Tasarımı (Glassmorphism) */
     .glass-card {
         background: rgba(15, 32, 67, 0.45);
         backdrop-filter: blur(12px);
@@ -33,8 +29,6 @@ st.markdown("""
         transform: translateY(-5px);
         border: 1px solid rgba(0, 212, 255, 0.5);
     }
-    
-    /* Instagram Tarzı Profil Kartları */
     .insta-post {
         background: rgba(255, 255, 255, 0.03);
         border-radius: 12px;
@@ -42,8 +36,6 @@ st.markdown("""
         margin-bottom: 15px;
         border-left: 4px solid #00d4ff;
     }
-    
-    /* Dehşet Premium Satış Alanı */
     .premium-vip-box {
         background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
         border: 2px solid #ffd700;
@@ -53,8 +45,6 @@ st.markdown("""
         box-shadow: 0px 0px 25px rgba(255, 215, 0, 0.3);
         color: #ffffff;
     }
-    
-    /* Başlıklar İçin Özel Gölgelendirme */
     h1, h2, h3 {
         font-family: 'Poppins', sans-serif;
         font-weight: 700;
@@ -64,16 +54,14 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# ================= 2. YAPAY ZEKA KUANTUM BEYNİ (HUGGING FACE) =================
+# ================= 2. YAPAY ZEKA MODEL BAĞLANTISI =================
 HF_TOKEN = "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"
 API_URL = "https://huggingface.co"
 
 def yapay_zeka_motoru(system_prompt, mesaj_gecmisi):
     headers = {"Authorization": f"Bearer {HF_TOKEN}"}
-    
-    # Kuantum düzeyde prompt iskeletini kuruyoruz (Karakter bilincini korumak için)
     formatted_prompt = f"<|system|>\n{system_prompt}\n"
-    for m in mesaj_gecmisi[-6:]: # Son 6 mesajı derin hafızada saklar
+    for m in mesaj_gecmisi[-6:]:
         etiket = "user" if m["role"] == "kullanici" else "assistant"
         formatted_prompt += f"<|{etiket}|>\n{m['text']}\n"
     formatted_prompt += "<|assistant|>\n"
@@ -82,19 +70,18 @@ def yapay_zeka_motoru(system_prompt, mesaj_gecmisi):
         "inputs": formatted_prompt,
         "parameters": {"max_new_tokens": 200, "temperature": 0.8, "top_p": 0.95}
     }
-    
     try:
         cevap = requests.post(API_URL, headers=headers, json=veri_paketi)
         sonuc = cevap.json()
         if isinstance(sonuc, list) and len(sonuc) > 0:
-            ham_metin = sonuc.get('generated_text', '')
+            ham_metin = sonuc[0].get('generated_text', '')
             temiz_metin = ham_metin.split("<|assistant|>\n")[-1].strip()
             return temiz_metin if temiz_metin else "Denizin derinliklerinde kayboldum, bir kez daha söyler misin? 🌊"
         return "Zihnim biraz bulutlandı, dalgalar durulunca tekrar deneyelim."
     except Exception:
         return "Bağlantıda küçük bir siber fırtına koptu, mesajı tekrar göndermeyi dene!"
 
-# ================= 3. DEVASA OTURUM VE VERİ YAPILARI (HAFIZA) =================
+# ================= 3. OTURUM HAFIZASI SİSTEMİ =================
 if "giris_yapildi" not in st.session_state:
     st.session_state.giris_yapildi = False
 if "kredi" not in st.session_state:
@@ -110,7 +97,7 @@ if "kesfet_postlari" not in st.session_state:
         {"user": "@neon_samurai", "bot": "Luna", "quote": "Merkezi veri tabanlarını patlatmak, seninle konuşmaktan daha kolaydı evlat.", "likes": 512, "comments": 42}
     ]
 
-# ================= 4. GİRİŞ VE KAYIT SİSTEMİ =================
+# ================= 4. GİRİŞ VE KAYIT EKRANI =================
 if not st.session_state.giris_yapildi:
     col1, col2, col3 = st.columns([1, 1.8, 1])
     with col2:
@@ -118,31 +105,29 @@ if not st.session_state.giris_yapildi:
         st.markdown("<h1 style='text-align: center; font-size: 45px;'>🌌 DEEPBLUE: YAŞAYAN SANAL EVREN</h1>", unsafe_allow_html=True)
         st.markdown("<p style='text-align: center; font-size: 16px; color:#94a3b8;'>Character.ai'ın ötesinde, yaşayan dijital ruhların ve sosyal medyanın buluşma noktası.</p>", unsafe_allow_html=True)
         
-        with st.container():
-            st.markdown("<div class='glass-card'>", unsafe_allow_html=True)
-            t1, t2 = st.tabs(["🔐 Evrene Adım At (Giriş Yap)", "📝 Dijital Kimlik Oluştur (Kayıt Ol)"])
-            
-            with t1:
-                eposta = st.text_input("Sanal Posta Adresiniz (E-mail)", placeholder="isim@domain.com")
-                sifre = st.text_input("Siber Şifreniz", type="password", placeholder="••••••••")
-                if st.button("Dünyayı Aktifleştir", use_container_width=True):
-                    if eposta and sifre:
-                        st.session_state.giris_yapildi = True
-                        st.session_state.kullanici = eposta.split("@")
-                        st.rerun()
-                    else:
-                        st.error("Giriş kodları eksik, lütfen alanları doldurun.")
-            with t2:
-                st.text_input("Kullanıcı Adı Seçin", placeholder="@ornek_kullanici")
-                st.text_input("E-posta Adresi", placeholder="kayit@domain.com")
-                st.text_input("Güvenli Şifre", type="password", placeholder="En az 8 karakter")
-                if st.button("Yeni Ruh Oluştur", use_container_width=True):
-                    st.success("Karakter veritabanına işlendi! Giriş Yap sekmesinden bağlanın.")
-            st.markdown("</div>", unsafe_allow_html=True)
+        st.markdown("<div class='glass-card'>", unsafe_allow_html=True)
+        t1, t2 = st.tabs(["🔐 Evrene Adım At (Giriş Yap)", "📝 Dijital Kimlik Oluştur (Kayıt Ol)"])
+        
+        with t1:
+            eposta = st.text_input("Sanal Posta Adresiniz (E-mail)", placeholder="isim@domain.com")
+            sifre = st.text_input("Siber Şifreniz", type="password", placeholder="••••••••")
+            if st.button("Dünyayı Aktifleştir", use_container_width=True):
+                if eposta and sifre:
+                    st.session_state.giris_yapildi = True
+                    st.session_state.kullanici = eposta.split("@")[0]
+                    st.rerun()
+                else:
+                    st.error("Giriş kodları eksik, lütfen alanları doldurun.")
+        with t2:
+            st.text_input("Kullanıcı Adı Seçin", placeholder="@ornek_kullanici")
+            st.text_input("E-posta Adresi", placeholder="kayit@domain.com")
+            st.text_input("Güvenli Şifre", type="password", placeholder="En az 8 karakter")
+            if st.button("Yeni Ruh Oluştur", use_container_width=True):
+                st.success("Karakter veritabanına işlendi! Giriş Yap sekmesinden bağlanın.")
+        st.markdown("</div>", unsafe_allow_html=True)
 
-# ================= 5. DEHAVET VERİCİ ANA SOSYAL EKOSİSTEM =================
+# ================= 5. ANA SOSYAL EKOSİSTEMİ =================
 else:
-    # Sol Kumanda Masası (Instagram + Discord Esintili Navigasyon)
     st.sidebar.markdown(f"## 🌐 MASTER KONTROL")
     st.sidebar.markdown(f"**👤 Kullanıcı:** `@{st.session_state.kullanici}`")
     
@@ -179,10 +164,20 @@ else:
             st.markdown("</div>", unsafe_allow_html=True)
             
         with c2:
-            st.markdown("<div class='glass-card' style='height: 500px; overflow-y: auto;'>", unsafe_allow_html=True)
-            
+            st.markdown("<div class='glass-card' style='height: 400px; overflow-y: auto; padding: 15px;'>", unsafe_allow_html=True)
             chat_key = f"chat_{current_bot['id']}"
             if chat_key not in st.session_state:
                 st.session_state[chat_key] = [{"role": "bot", "text": f"Merhaba @{st.session_state.kullanici}... Ben {current_bot['name']}. Sinyallerini alıyorum, konuşmaya hazırım."}]
                 
             for msg in st.session_state[chat_key]:
+                if msg["role"] == "bot":
+                    st.markdown(f"**🤖 {current_bot['name']}:** {msg['text']}\n")
+                else:
+                    st.markdown(f"**👤 Siz:** {msg['text']}\n")
+            st.markdown("</div>", unsafe_allow_html=True)
+            
+            if st.session_state.kredi > 0:
+                if girdi := st.chat_input(f"{current_bot['name']} bilincine bir mesaj gönder..."):
+                    st.session_state[chat_key].append({"role": "kullanici", "text": girdi})
+                    st.session_state.kredi -= 1
+                    with st.spinner("Kuantum veri işleniyor..."):

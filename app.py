@@ -87,7 +87,7 @@ def yapay_zeka_motoru(system_prompt, mesaj_gecmisi):
         cevap = requests.post(API_URL, headers=headers, json=veri_paketi)
         sonuc = cevap.json()
         if isinstance(sonuc, list) and len(sonuc) > 0:
-            ham_metin = sonuc[0].get('generated_text', '')
+            ham_metin = sonuc.get('generated_text', '')
             temiz_metin = ham_metin.split("<|assistant|>\n")[-1].strip()
             return temiz_metin if temiz_metin else "Denizin derinliklerinde kayboldum, bir kez daha söyler misin? 🌊"
         return "Zihnim biraz bulutlandı, dalgalar durulunca tekrar deneyelim."
@@ -128,7 +128,7 @@ if not st.session_state.giris_yapildi:
                 if st.button("Dünyayı Aktifleştir", use_container_width=True):
                     if eposta and sifre:
                         st.session_state.giris_yapildi = True
-                        st.session_state.kullanici = eposta.split("@")[0]
+                        st.session_state.kullanici = eposta.split("@")
                         st.rerun()
                     else:
                         st.error("Giriş kodları eksik, lütfen alanları doldurun.")
@@ -166,12 +166,10 @@ else:
         st.markdown("# 🌅 Canlı Karakter Odaları")
         st.write("Aşağıdan konuşmak istediğin yaşayan dijital zekayı seç ve Matrix'e bağlan.")
         
-        # Karakter seçme kartları
         bot_names = [b["name"] for b in st.session_state.hazir_karakterler]
         secilen_bot_name = st.selectbox("Konuşulacak Dijital Bilinci Seçin:", bot_names)
         current_bot = next(b for b in st.session_state.hazir_karakterler if b["name"] == secilen_bot_name)
         
-        # Dehşet Görsel Alanı (Tam istediğin gibi estetik karakter resimleri içerir)
         c1, c2 = st.columns([1.2, 2])
         with c1:
             st.markdown(f"<div class='glass-card' style='text-align:center;'>", unsafe_allow_html=True)
@@ -183,6 +181,8 @@ else:
         with c2:
             st.markdown("<div class='glass-card' style='height: 500px; overflow-y: auto;'>", unsafe_allow_html=True)
             
-            # Dinamik Sohbet Anahtarı
             chat_key = f"chat_{current_bot['id']}"
             if chat_key not in st.session_state:
+                st.session_state[chat_key] = [{"role": "bot", "text": f"Merhaba @{st.session_state.kullanici}... Ben {current_bot['name']}. Sinyallerini alıyorum, konuşmaya hazırım."}]
+                
+            for msg in st.session_state[chat_key]:
